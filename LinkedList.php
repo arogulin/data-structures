@@ -58,11 +58,12 @@ class LinkedList
     /** @var int Number of nodes in the list */
     private $count;
 
-    public function __construct(array $data = null)
+    public function __construct(array $data = array())
     {
         $this->count = 0;
-        for ($i = 0; $i < count($data); $i++) {
-            $this->insert($data, $i);
+        $values = array_values($data);
+        for ($i = 0; $i < count($values); $i++) {
+            $this->insert($values[$i], $i);
         }
     }
 
@@ -76,14 +77,14 @@ class LinkedList
     {
         $newNode = new Node($data);
 
+        if ($position > $this->count) {
+            // Always insert in the end of the list
+            $position = $this->count;
+        }
+
         if ($position === 0) {
             $this->insertFirstNode($newNode);
             return;
-        }
-
-        if ($position > $this->count) {
-            throw new \Exception('Unable to insert at position #' . $position
-                . ' in the list of ' . $this->count . ' nodes');
         }
 
         $temp = $this->head;
@@ -111,6 +112,17 @@ class LinkedList
         return $string;
     }
 
+    public function toArray()
+    {
+        $result = array();
+        $temp = $this->head;
+        while ($temp instanceof Node) {
+            $result[] = $temp->getData();
+            $temp = $temp->getNext();
+        }
+        return $result;
+    }
+
     private function insertFirstNode(Node $newNode)
     {
         $this->count++;
@@ -125,15 +137,3 @@ class LinkedList
         return;
     }
 }
-
-$list = new LinkedList();
-$list->insert(1, 0);
-$list->insert(2, 1);
-$list->insert(4, 2);
-$list->insert(3, 2);
-$list->insert(5, 4);
-echo $list;
-echo '<pre>';
-var_dump($list);
-echo '</pre>';
-die();
