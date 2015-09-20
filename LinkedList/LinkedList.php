@@ -76,19 +76,32 @@ class LinkedList
         $this->count--;
     }
 
-    public function __toString()
+    /**
+     * Reverse the current list with memory efficient method.
+     */
+    public function reverseIterative()
     {
-        $string = 'List: ';
-        $temp = $this->head;
-        if ($temp === null) {
-            return $string;
+        $current = $this->head;
+        $prev = null;
+        while ($current instanceof LinkedListNode) {
+            $next = $current->getNext();
+            $current->setNext($prev);
+            $prev = $current;
+            $current = $next;
         }
-        while ($temp->getNext() instanceof LinkedListNode) {
-            $string .= $temp->getData() . ' ';
-            $temp = $temp->getNext();
+        $this->head = $prev;
+    }
+
+    /**
+     * Reverse the current list with memory inefficient method.
+     */
+    public function reverseRecursive()
+    {
+        if ($this->head === null) {
+            // List is empty
+            return;
         }
-        $string .= $temp->getData() . ' ';
-        return $string;
+        $this->doReverseRecursive($this->head);
     }
 
     public function toArray()
@@ -123,5 +136,20 @@ class LinkedList
     {
         $this->count--;
         $this->head = $this->head->getNext();
+    }
+
+    /**
+     * @param LinkedListNode $node
+     */
+    private function doReverseRecursive($node)
+    {
+        if ($node->getNext() === null) {
+            // End of the list
+            $this->head = $node;
+            return;
+        }
+        $this->doReverseRecursive($node->getNext());
+        $node->getNext()->setNext($node);
+        $node->setNext(null);
     }
 }

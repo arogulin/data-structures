@@ -113,4 +113,52 @@ class LinkedListTest extends PHPUnit_Framework_TestCase
         $list = new LinkedList([1, 2, 3]);
         $list->delete(100);
     }
+
+    /**
+     * @dataProvider providerReverse
+     * @param array $originalValues
+     * @param array $expectedValues
+     */
+    public function testReverseIterative(array $originalValues, array $expectedValues)
+    {
+        $list = new LinkedList($originalValues);
+        $this->assertEquals($originalValues, $list->toArray());
+
+        $list->reverseIterative();
+        
+        $this->assertEquals($expectedValues, $list->toArray());
+    }
+
+    /**
+     * @dataProvider providerReverse
+     * @param array $originalValues
+     * @param array $expectedValues
+     */
+    public function testReverseRecursive(array $originalValues, array $expectedValues)
+    {
+        $list = new LinkedList($originalValues);
+        $this->assertEquals($originalValues, $list->toArray());
+
+        $list->reverseRecursive();
+
+        $this->assertEquals($expectedValues, $list->toArray());
+    }
+
+    public function providerReverse()
+    {
+        return [
+            [
+                'original_values' => [1, 2, 3, 4, 5],
+                'expected_values' => [5, 4, 3, 2, 1],
+            ],
+            [
+                'original_values' => [1],
+                'expected_values' => [1],
+            ],
+            [
+                'original_values' => [],
+                'expected_values' => [],
+            ],
+        ];
+    }
 }
