@@ -1,63 +1,18 @@
 <?php
-
-class Node
-{
-    /** @var mixed */
-    private $data;
-
-    /** @var self|null */
-    private $next;
-
-    /**
-     * @param mixed $data
-     */
-    public function __construct($data)
-    {
-        $this->data = $data;
-    }
-
-    /**
-     * @return self|null
-     */
-    public function getNext()
-    {
-        return $this->next;
-    }
-
-    /**
-     * @param self|null $next
-     */
-    public function setNext($next)
-    {
-        $this->next = $next;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    /**
-     * @param mixed $data
-     */
-    public function setData($data)
-    {
-        $this->data = $data;
-    }
-}
+require_once 'LinkedListNode.php';
 
 class LinkedList
 {
 
-    /** @var Node|null */
+    /** @var LinkedListNode|null */
     private $head;
 
     /** @var int Number of nodes in the list */
     private $count;
 
+    /**
+     * @param array $data
+     */
     public function __construct(array $data = array())
     {
         $this->count = 0;
@@ -75,7 +30,7 @@ class LinkedList
      */
     public function insert($data, $position)
     {
-        $newNode = new Node($data);
+        $newNode = new LinkedListNode($data);
 
         if ($position > $this->count) {
             // Always insert in the end of the list
@@ -87,14 +42,38 @@ class LinkedList
             return;
         }
 
-        $temp = $this->head;
+        $currentNode = $this->head;
         for ($i = 0; $i < $position - 1; $i++) {
-            $temp = $temp->getNext();
+            $currentNode = $currentNode->getNext();
         }
-        // Now temp is $position - 1
-        $newNode->setNext($temp->getNext());
-        $temp->setNext($newNode);
+        // Now $currentNode on $position - 1
+        $newNode->setNext($currentNode->getNext());
+        $currentNode->setNext($newNode);
         $this->count++;
+    }
+
+    /**
+     * @param int $position
+     * @throws Exception
+     */
+    public function delete($position)
+    {
+        if ($position > $this->count) {
+            throw new \Exception('Can\'t delete position #' . $position . ' from list with ' . $this->count . ' nodes');
+        }
+
+        if ($position === 0) {
+            $this->deleteFirstNode();
+            return;
+        }
+
+        $currentNode = $this->head;
+        for ($i = 0; $i < $position - 1; $i++) {
+            $currentNode = $currentNode->getNext();
+        }
+        $deleteNode = $currentNode->getNext();
+        $currentNode->setNext($deleteNode->getNext());
+        $this->count--;
     }
 
     public function __toString()
@@ -104,7 +83,7 @@ class LinkedList
         if ($temp === null) {
             return $string;
         }
-        while ($temp->getNext() instanceof Node) {
+        while ($temp->getNext() instanceof LinkedListNode) {
             $string .= $temp->getData() . ' ';
             $temp = $temp->getNext();
         }
@@ -116,14 +95,17 @@ class LinkedList
     {
         $result = array();
         $temp = $this->head;
-        while ($temp instanceof Node) {
+        while ($temp instanceof LinkedListNode) {
             $result[] = $temp->getData();
             $temp = $temp->getNext();
         }
         return $result;
     }
 
-    private function insertFirstNode(Node $newNode)
+    /**
+     * @param LinkedListNode $newNode
+     */
+    private function insertFirstNode(LinkedListNode $newNode)
     {
         $this->count++;
 
@@ -135,5 +117,11 @@ class LinkedList
         $newNode->setNext($this->head);
         $this->head = $newNode;
         return;
+    }
+
+    private function deleteFirstNode()
+    {
+        $this->count--;
+        $this->head = $this->head->getNext();
     }
 }

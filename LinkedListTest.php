@@ -36,4 +36,81 @@ class LinkedListTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($values, $list->toArray());
     }
 
+    public function testInsertInRandomOrder()
+    {
+        // value => order
+        $values = [
+            1 => 0,
+            2 => 1,
+            3 => 1,
+            4 => 0,
+            5 => 2,
+        ];
+        $expectedValues = [4, 1, 5, 3, 2];
+
+        $list = new LinkedList();
+        foreach ($values as $value => $position) {
+            $list->insert($value, $position);
+        }
+
+        $this->assertEquals($expectedValues, $list->toArray());
+    }
+
+    public function testDeleteFromBeginning()
+    {
+        $values = [1, 2, 3];
+
+        $list = new LinkedList($values);
+        $this->assertEquals($values, $list->toArray());
+
+        for ($i = 0, $count = count($values); $i < $count; $i++) {
+            array_shift($values);
+            $list->delete(0);
+            $this->assertEquals($values, $list->toArray());
+        }
+        $this->assertEmpty($list->toArray());
+    }
+
+    public function testDeleteFromEnd()
+    {
+        $values = [1, 2, 3];
+
+        $list = new LinkedList($values);
+        $this->assertEquals($values, $list->toArray());
+
+        for ($i = count($values) - 1; $i >= 0; $i--) {
+            array_pop($values);
+            $list->delete($i);
+            $this->assertEquals($values, $list->toArray());
+        }
+        $this->assertEmpty($list->toArray());
+    }
+
+    public function testDeleteInRandomOrder()
+    {
+        $order = [3, 2, 0, 1, 0];
+        $values = [4, 1, 5, 3, 2];
+
+        $list = new LinkedList($values);
+
+        foreach ($order as $position) {
+            $list->delete($position);
+            unset($values[$position]);
+            // Rebuild keys
+            $values = array_values($values);
+            $this->assertEquals($values, $list->toArray());
+        }
+
+        $this->assertEmpty($list->toArray());
+    }
+
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessageRegExp #Can't delete#
+     */
+    public function testErrorDeletePositionNotExists()
+    {
+        $list = new LinkedList([1, 2, 3]);
+        $list->delete(100);
+    }
 }
